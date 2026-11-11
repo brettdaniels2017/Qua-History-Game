@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import {
   DEBATES,
   ratingLabel,
-  resolveInterlude,
   resolveResponse,
   resolveRival,
   tradeoffLine,
@@ -11,13 +10,12 @@ import { Cameo } from './Emblems.jsx';
 import StatsBar from './StatsBar.jsx';
 
 const PHASES = [
-  ['situation', 'Scene'],
+  ['situation', 'Point'],
   ['side', 'Side'],
-  ['respond', 'Argument'],
+  ['respond', 'Reply'],
   ['rating', 'Rating'],
-  ['rebuttal', 'Rebuttal'],
-  ['decision', 'Decision'],
-  ['results', 'Results'],
+  ['rebuttal', 'Answer'],
+  ['results', 'Senate'],
 ];
 
 const NUMERALS = ['I', 'II', 'III'];
@@ -43,9 +41,6 @@ export default function GameScreen({ state, dispatch, onGuide }) {
 
   const side = state.flags.sides[debate.id];
   const rival = side ? resolveRival(debate, side, state.flags) : null;
-  const interlude = state.phase === 'decision'
-    ? resolveInterlude(debate, state.flags)
-    : [];
   const replies = debate.responses
     .filter((item) => (item.side || 'against') === side)
     .map((item) => {
@@ -59,7 +54,7 @@ export default function GameScreen({ state, dispatch, onGuide }) {
   } else if (!picked && state.phase === 'rating') {
     dock = { label: 'Hear the rebuttal', run: () => dispatch({ type: 'ADVANCE' }) };
   } else if (!picked && state.phase === 'rebuttal') {
-    dock = { label: 'Face the decision', run: () => dispatch({ type: 'ADVANCE' }) };
+    dock = { label: 'The Senate decides', run: () => dispatch({ type: 'SENATE' }) };
   } else if (!picked && state.phase === 'results') {
     const last = state.debateIndex >= DEBATES.length - 1;
     dock = {
@@ -186,26 +181,6 @@ export default function GameScreen({ state, dispatch, onGuide }) {
             />
           )}
 
-          {state.phase === 'decision' && (
-            <>
-              <p className="year-chip">Final decision</p>
-              <h1>{debate.title}</h1>
-              <div className="narration">
-                {interlude.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
-              </div>
-              <ChoiceList
-                heading="What does the Senate do?"
-                who="player"
-                items={debate.decisions}
-                picked={picked}
-                onPick={(id) => choose(id, 'CHOOSE_DECISION')}
-                showHints
-              />
-            </>
-          )}
-
           {state.phase === 'results' && state.round && (
             <Results debate={debate} round={state.round} />
           )}
@@ -315,8 +290,6 @@ function RatingSeal({ rating }) {
 }
 
 function Results({ debate, round }) {
-  const decision = debate.decisions.find((item) => item.id === round.decisionId);
-  const spent = round.side !== 'for' && round.rating >= 8 && decision && decision.deltas.argument < 0;
   const rows = [
     ['argument', 'Republican argument'],
     ['senate', 'Senate support'],
@@ -326,15 +299,10 @@ function Results({ debate, round }) {
 
   return (
     <div className="results">
-      <p className="year-chip">{debate.year} · Round results</p>
-      <h1>{debate.title}</h1>
+      <p className="year-chip">{debate.year} · The Senate</p>
+      <h1>{round.senateLine}</h1>
       <RatingSeal rating={round.rating} />
       <p>{round.explanation}</p>
-      {spent ? (
-        <p className="tradeoff">
-          The speech helped the Republic. The decision spent some of that gain.
-        </p>
-      ) : null}
       <p className="tradeoff">{tradeoffLine(round.before, round.after)}</p>
       <ul className="delta-list">
         {rows.map(([key, label]) => {

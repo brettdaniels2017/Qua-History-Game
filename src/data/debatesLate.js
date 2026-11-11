@@ -22,7 +22,7 @@ export const lateDebates = [
       { id: 'against', label: 'Argue for the Senate', text: 'Repair the chamber. Do not hand it to one man.' },
     ],
     situation: [
-      'January 49 BCE, before the river. Caesar is still with his army. Bribery is a trade. Gangs break the assemblies. The Senate cannot tell a constitution from a faction.',
+      'The Senate is bought, stalled, and afraid of him.',
     ],
     chamber: [
       {
@@ -40,12 +40,12 @@ export const lateDebates = [
       else if (decisions.legions === 'strict') memory = 'You would hand an army to a senate that cannot pass a land bill. ';
       else if (decisions.legions === 'shared') memory = 'One law for both generals. Who here can enforce it? ';
       return [
-        `${memory}Look at this Senate. Senators fight for influence while Rome’s problems sit unsolved. Perhaps Rome does not need more debate. Perhaps it needs someone willing to act.`,
+        `${memory}Perhaps Rome does not need more debate. Perhaps it needs someone willing to act.`,
       ];
     },
     senate() {
       return [
-        'The Senate is slow, vain, and often bought. That is an argument for punishing bribery, not for giving the state to the man who noticed. A consul still ends.',
+        'The Senate is slow and often bought. That is not a reason to give him the state.',
       ];
     },
     responses: [
@@ -137,7 +137,7 @@ export const lateDebates = [
       { id: 'against', label: 'Condemn the crossing', text: 'No grievance justifies an army in Italy.' },
     ],
     situation: [
-      'He has crossed. The Rubicon was the edge of his lawful command. The Senate’s final decree is days old, his friends have been driven out, and Pompey is preparing to leave the city. He says he was given no choice.',
+      'He has crossed the Rubicon. He says there was no other choice.',
     ],
     chamber: [
       {
@@ -162,14 +162,14 @@ export const lateDebates = [
         memory = 'You promised laws for the people. Your colleagues answered with a final decree. ';
       }
       return [
-        `${memory}The Senate tried to strip my command and destroy what I built. I have been left with no choice. I act against those who corrupted Rome, not against Rome. Would you rather let them destroy the Republic than let someone defend it?`,
+        `${memory}I have been left with no choice.`,
       ];
     },
     senate(flags) {
       const note = flags.decisions.legions === 'independent'
         ? 'You trusted generals with their armies. Look where that trust is standing. '
         : '';
-      return [`${note}I would have disbanded if he did. He chose the sword. An army across this river is not a negotiation.`];
+      return [`${note}He chose the sword. An army across this river is not a speech.`];
     },
     responses: [
       {
@@ -287,7 +287,7 @@ export const lateDebates = [
       { id: 'against', label: 'Oppose a life office', text: 'No peace that dies with one man is a constitution.' },
     ],
     situation: [
-      'It is 44 BCE. Caesar won at Pharsalus in 48, became dictator for ten years in 46, and is now dictator for life. He has reformed the calendar and settled veterans. He has also packed the Senate. He refused a crown at the Lupercalia and kept the power. He is not emperor. That comes later, with his heir.',
+      'He is dictator for life. He is not emperor. That comes later, with his heir.',
     ],
     chamber: [
       {
@@ -313,14 +313,14 @@ export const lateDebates = [
         memory = 'You have been consistent. I respect that. I do not intend to obey it.';
       }
       return [
-        `${memory} Rome has known division and bloodshed. I brought stability and order. If Rome is finally at peace, why should I surrender the authority that made it possible?`,
+        `${memory} If Rome is at peace, why should I surrender the authority that made it possible?`,
       ];
     },
     senate(flags) {
       const note = yielded(flags).length >= 2
         ? 'You have already given him the pieces. '
         : '';
-      return [`${note}Dictator was built to expire. For life, it is a confession that the emergency is convenient. Rome has to outlive him.`];
+      return [`${note}Dictator was built to expire. For life, it is no longer an emergency.`];
     },
     responses: [
       {

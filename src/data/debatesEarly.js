@@ -11,7 +11,7 @@ export const earlyDebates = [
       { id: 'against', label: 'Argue against his power', text: 'A command ends, or it stops being a republic.' },
     ],
     situation: [
-      'It is 50 BCE. Caesar’s extraordinary command in Gaul is ending. He wants to keep his authority and stand for consul without dismissing his army. His enemies want him home as a private citizen, where a court can reach him.',
+      'Caesar’s command in Gaul is ending. He wants to keep it.',
     ],
     chamber: [
       {
@@ -22,12 +22,12 @@ export const earlyDebates = [
     ],
     caesar() {
       return [
-        'Rome is stronger than ever, yet the government is weaker than it should be. I defended her and enriched her people. Why should the man who has secured Rome’s future be denied the authority to continue doing so? I am not asking to be king. Do not punish success because it frightens you.',
+        'Why should the man who has secured Rome’s future be denied the authority to continue doing so?',
       ];
     },
     senate() {
       return [
-        'Success is not a second term. If Caesar keeps this command because he used the last one well, the next victor will keep his for the same reason. End it.',
+        'Success is not a second term. End the command.',
       ];
     },
     responses: [
@@ -114,7 +114,7 @@ export const earlyDebates = [
       { id: 'against', label: 'Argue the army is Rome’s', text: 'A legion answers the Republic, not its general.' },
     ],
     situation: [
-      'Since Marius recruited men without property, a soldier’s pay and land have depended on his general. Caesar’s veterans trust him. Pompey’s trust Pompey. The Republic still says the army belongs to Rome.',
+      'His veterans trust him. The Republic says the army belongs to Rome.',
     ],
     chamber: [
       {
@@ -134,7 +134,7 @@ export const earlyDebates = [
         memory = 'You offered a triumph if I first dismissed the army. The Senate has spent ten years forgetting its pay.';
       }
       return [
-        `${memory} These men fought beside me and trust my judgment. Why should distant senators who have never faced the battlefield determine how these men are commanded?`,
+        `${memory} Why should distant senators who have never faced the battlefield determine how these men are commanded?`,
       ];
     },
     senate(flags) {
@@ -142,7 +142,7 @@ export const earlyDebates = [
       const memory = decision === 'grant'
         ? 'You already left the authority with him. '
         : 'An army that loves its general first is a private weapon. ';
-      return [`${memory}Pay them from the treasury. If they answer only Caesar, he can march them at this city.`];
+      return [`${memory}If they answer only Caesar, he can march them here.`];
     },
     responses: [
       {
@@ -228,7 +228,7 @@ export const earlyDebates = [
       { id: 'against', label: 'Argue relief must be law', text: 'Help that depends on one man is not a public good.' },
     ],
     situation: [
-      'Grain, debt, and land for veterans are already politics. Caesar’s great reform laws still lie ahead, after the war. The claim is here now: he says he will do for ordinary Romans what the Senate will not.',
+      'He says he will feed ordinary Romans if the Senate will not.',
     ],
     chamber: [
       {
@@ -246,14 +246,14 @@ export const earlyDebates = [
       if (decisions.power === 'grant') memory += 'You already admitted Rome needs my authority. ';
       else if (decisions.power === 'refuse') memory += 'You refused me in the name of senators. They are not the ones in the grain line. ';
       return [
-        `${memory}The Senate speaks of tradition while ordinary Romans struggle. I have offered land to veterans and tried to fix what this government ignores. If that improves their lives, why should I be prevented from exercising it?`,
+        `${memory}If that improves their lives, why should I be prevented from exercising it?`,
       ];
     },
     senate(flags) {
       const note = flags.decisions.legions === 'independent'
         ? 'You already loosened his hold on the army. '
         : '';
-      return [`${note}Feed them by statute. A gift with one man’s name on it makes clients, not citizens.`];
+      return [`${note}A gift with one man’s name on it makes clients, not citizens.`];
     },
     responses: [
       {

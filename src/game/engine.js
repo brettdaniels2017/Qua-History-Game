@@ -39,8 +39,31 @@ export const STAT_META = [
 const ADVANCE = {
   situation: 'side',
   rating: 'rebuttal',
-  rebuttal: 'decision',
 };
+
+const VERDICT = {
+  power: { against: ['refuse', 'limited', 'grant'], for: ['grant', 'limited', 'refuse'] },
+  legions: { against: ['shared', 'shared', 'independent'], for: ['independent', 'shared', 'shared'] },
+  people: { against: ['assemblies', 'assemblies', 'bypass'], for: ['bypass', 'bypass', 'assemblies'] },
+  senate: { against: ['reform', 'unchanged', 'emergency'], for: ['emergency', 'unchanged', 'reform'] },
+  rubicon: { against: ['negotiate', 'negotiate', 'accept'], for: ['accept', 'negotiate', 'negotiate'] },
+  dictator: { against: ['oppose', 'oppose', 'accept'], for: ['accept', 'oppose', 'oppose'] },
+};
+
+const PRESSURE = {
+  power: { popular: -1, stability: -1 },
+  legions: { popular: 0, stability: -3 },
+  people: { popular: 2, stability: 1 },
+  senate: { popular: 1, stability: 1 },
+  rubicon: { popular: -2, stability: -4 },
+  dictator: { popular: -1, stability: -2 },
+};
+
+function verdictBand(rating) {
+  if (rating >= 8) return 0;
+  if (rating >= 6) return 1;
+  return 2;
+}
 
 export function clampStat(n) {
   return Math.max(0, Math.min(100, Math.round(n)));
@@ -100,6 +123,54 @@ export function republicanAim(rating, side) {
 export function resolveOpening(debate, flags) {
   const value = call(debate.caesar, flags);
   return Array.isArray(value) ? value : [value];
+}
+
+/**
+ * The Senate does not take a second vote from you.
+ * A strong case pulls the benches your way. A weak one pushes them off it.
+ * Senate Support counts senators still holding the Republic, so a strong
+ * case for Caesar spends that number: they moved with you, toward him.
+ */
+export function judgeSenate(debate, side, rating) {
+  const swing = rating - 6;
+  const republicLean = side === 'against' ? swing : -swing;
+  const decisionId = VERDICT[debate.id][side][verdictBand(rating)];
+  const decision = debate.decisions.find((item) => item.id === decisionId);
+  const pressure = PRESSURE[debate.id];
+  let popular = pressure.popular * republicLean;
+  let stability = pressure.stability * republicLean;
+  if (republicLean < 0 && (debate.id === 'rubicon' || debate.id === 'dictator')) {
+    stability = Math.abs(swing) * 2;
+    popular = Math.abs(swing);
+  }
+  if (debate.id === 'people' && republicLean < 0) {
+    popular = Math.abs(swing) * 2;
+  }
+  return {
+    decisionId,
+    decisionLabel: decision.label,
+    consequence: decision.result,
+    aligned: verdictBand(rating) === 0 ? 'with' : verdictBand(rating) === 1 ? 'split' : 'against',
+    deltas: {
+      argument: 0,
+      senate: republicLean * 3,
+      popular,
+      stability,
+    },
+  };
+}
+
+export function senateLine(side, rating) {
+  const swing = rating - 6;
+  if (swing >= 2) {
+    return side === 'for'
+      ? 'The Senate moves with you, toward Caesar.'
+      : 'The Senate moves with you.';
+  }
+  if (swing >= 0) return 'The Senate is split. Only a few benches shift.';
+  return side === 'for'
+    ? 'The case slips. The Senate moves against you and stays with the Republic.'
+    : 'The case slips. The Senate moves against you.';
 }
 
 export function resolveInterlude(debate, flags) {
@@ -205,13 +276,12 @@ export function reducer(state, action) {
         },
       };
     }
-    case 'CHOOSE_DECISION': {
-      if (state.phase !== 'decision' || !state.pending) return state;
+    case 'SENATE': {
+      if (state.phase !== 'rebuttal' || !state.pending) return state;
       const debate = DEBATES[state.debateIndex];
-      const decision = debate.decisions.find((item) => item.id === action.id);
-      if (!decision) return state;
+      const verdict = judgeSenate(debate, state.pending.side, state.pending.rating);
       const before = state.stats;
-      const after = applyRound(before, state.pending.rating, decision.deltas, state.pending.side);
+      const after = applyRound(before, state.pending.rating, verdict.deltas, state.pending.side);
       const round = {
         debateId: debate.id,
         numeral: debate.numeral,
@@ -223,9 +293,11 @@ export function reducer(state, action) {
         lead: state.pending.lead,
         explanation: state.pending.explanation,
         rebuttal: state.pending.rebuttal,
-        decisionId: decision.id,
-        decisionLabel: decision.label,
-        consequence: decision.result,
+        aligned: verdict.aligned,
+        senateLine: senateLine(state.pending.side, state.pending.rating),
+        decisionId: verdict.decisionId,
+        decisionLabel: verdict.decisionLabel,
+        consequence: verdict.consequence,
         before,
         after,
       };
@@ -237,7 +309,7 @@ export function reducer(state, action) {
         log: [...state.log, round],
         flags: {
           ...state.flags,
-          decisions: { ...state.flags.decisions, [debate.id]: decision.id },
+          decisions: { ...state.flags.decisions, [debate.id]: verdict.decisionId },
         },
       };
     }

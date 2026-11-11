@@ -59,23 +59,23 @@ export const HOW_TO = {
     {
       heading: 'Six debates',
       paragraphs: [
-        'Six debates, from his claim on power in 50 BCE to dictator for life in 44 BCE. Each one starts with a side. Argue for Caesar, and a senator answers you. Argue against him, and Caesar answers you. Then the Senate still has to vote.',
-        'He remembers votes. A decision about the legions can return at the Rubicon.',
+        'Each topic opens with a short point. You take a side, answer in a sentence or two, and the other side answers back. The Senate then moves. A strong case pulls them your way. A weak one pushes them off it.',
+        'He remembers which way they moved. A loss on the legions can come back at the river.',
       ],
     },
     {
       heading: 'How an argument is rated',
       paragraphs: [
-        'Your speech is scored from 1 to 10 on the side you chose. A high score means the case was well made, whether it was his or the Republic’s.',
-        'Republican argument strength only climbs when you argue against him. A sharp case for Caesar does not raise it. The vote afterward still moves the Senate, the Forum, and the peace.',
+        'The score is how well you made the case you chose. From 8 up, the Senate moves with you. At 6 or 7, they split. Below that, they move against you.',
+        'Senate Support counts senators still holding the Republic. A strong case against Caesar raises it. A strong case for him spends it: they followed you, toward Caesar.',
       ],
     },
     {
       heading: 'The four measures',
       paragraphs: [
         'You begin with Republican Argument Strength at 50, Senate Support at 52, Public Support at 38, and Political Stability at 58. Caesar is already more loved in the streets than a senator who talks about procedure. The city is strained and not yet at war.',
-        'Each speech against Caesar pulls argument strength toward that rating. A speech for him, however good, does not. Then the decision adds or subtracts. You can argue one way and vote another.',
-        'Senate support, public support, and stability move with the decision, not with the eloquence. A strong defense of the Senate can anger the Forum. Refusing Caesar’s army can be constitutionally right and still make civil war more likely. Those are not bugs in the scoring. They are the late Republic.',
+        'Each speech against Caesar pulls argument strength toward that rating. A speech for him does not. The Senate’s move follows the rating, not a second vote.',
+        'Senate support moves with the argument. A strong case can still unsettle the city: winning the chamber at the Rubicon is not the same as keeping the peace.',
       ],
     },
     {
@@ -83,7 +83,7 @@ export const HOW_TO = {
       paragraphs: [
         'The Republic Survives only if the case is strong, the Senate still stands with you, the city is not already broken, and you did not accept a dictator for life.',
         'The Age of Caesar arrives if you hand him that title, if the Senate’s support drains away, or if the argument itself was never truly made. A late speech cannot refill an empty chamber.',
-        'The Fall of the Republic comes if you join a conspiracy to kill him, or if stability collapses — including a war at the Rubicon fought after the people have already left you. The assassination of Caesar did not, in history, restore the Republic. It will not do so here.',
+        'The Fall of the Republic comes if the peace collapses. Winning every hard argument can do that. Killing Caesar is not a choice here, and in history it did not restore the Republic.',
       ],
     },
   ],

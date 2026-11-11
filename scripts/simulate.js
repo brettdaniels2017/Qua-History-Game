@@ -49,7 +49,7 @@ function checkContent() {
 
 function play(choices) {
   let state = createGame();
-  choices.forEach(([debateId, responseId, decisionId]) => {
+  choices.forEach(([debateId, responseId]) => {
     const debate = DEBATES[state.debateIndex];
     assert(debate.id === debateId, `expected ${debateId} got ${debate.id}`);
     state = reducer(state, { type: 'ADVANCE' });
@@ -58,7 +58,7 @@ function play(choices) {
     state = reducer(state, { type: 'CHOOSE_RESPONSE', id: responseId });
     state = reducer(state, { type: 'ADVANCE' });
     state = reducer(state, { type: 'ADVANCE' });
-    state = reducer(state, { type: 'CHOOSE_DECISION', id: decisionId });
+    state = reducer(state, { type: 'SENATE' });
     ['argument', 'senate', 'popular', 'stability'].forEach((key) => {
       const value = state.stats[key];
       assert(value >= 0 && value <= 100, `${debateId} ${key} out of range: ${value}`);
@@ -83,44 +83,36 @@ function report(name, state) {
 
 const paths = {
   republic: [
-    ['power', 'precedent', 'refuse'],
-    ['legions', 'weapon', 'shared'],
-    ['people', 'law', 'assemblies'],
-    ['senate', 'reform', 'reform'],
-    ['rubicon', 'above-law', 'negotiate'],
-    ['dictator', 'mortal', 'oppose'],
+    ['power', 'precedent'],
+    ['legions', 'accountable'],
+    ['people', 'law'],
+    ['senate', 'reform'],
+    ['rubicon', 'no-force'],
+    ['dictator', 'mortal'],
   ],
   caesar: [
-    ['power', 'control', 'grant'],
-    ['legions', 'accountable', 'independent'],
-    ['people', 'patronage', 'bypass'],
-    ['senate', 'safer', 'emergency'],
-    ['rubicon', 'no-force', 'accept'],
-    ['dictator', 'no-one', 'accept'],
+    ['power', 'earned'],
+    ['legions', 'trust'],
+    ['people', 'bread'],
+    ['senate', 'deadlock'],
+    ['rubicon', 'forced'],
+    ['dictator', 'peace'],
   ],
   fall: [
-    ['power', 'precedent', 'refuse'],
-    ['legions', 'weapon', 'strict'],
-    ['people', 'crowd', 'block'],
-    ['senate', 'safer', 'unchanged'],
-    ['rubicon', 'above-law', 'resist'],
-    ['dictator', 'mortal', 'oppose'],
-  ],
-  conspiracy: [
-    ['power', 'precedent', 'limited'],
-    ['legions', 'accountable', 'shared'],
-    ['people', 'law', 'assemblies'],
-    ['senate', 'reform', 'reform'],
-    ['rubicon', 'above-law', 'negotiate'],
-    ['dictator', 'mortal', 'conspiracy'],
+    ['power', 'precedent'],
+    ['legions', 'weapon'],
+    ['people', 'crowd'],
+    ['senate', 'checks'],
+    ['rubicon', 'above-law'],
+    ['dictator', 'mortal'],
   ],
   surrender: [
-    ['power', 'precedent', 'refuse'],
-    ['legions', 'weapon', 'shared'],
-    ['people', 'law', 'assemblies'],
-    ['senate', 'reform', 'reform'],
-    ['rubicon', 'above-law', 'negotiate'],
-    ['dictator', 'mortal', 'accept'],
+    ['power', 'earned'],
+    ['legions', 'trust'],
+    ['people', 'bread'],
+    ['senate', 'deadlock'],
+    ['rubicon', 'forced'],
+    ['dictator', 'peace'],
   ],
 };
 
@@ -160,11 +152,10 @@ Object.entries(paths).forEach(([name, choices]) => {
   results[name] = report(name, play(choices));
 });
 
-assert(results.republic === 'republic', 'wise republican path should save the Republic');
-assert(results.caesar === 'caesar', 'concession path should produce the Age of Caesar');
-assert(results.fall === 'fall', 'hardline war path should fall');
-assert(results.conspiracy === 'fall', 'assassination should not restore the Republic');
-assert(results.surrender === 'caesar', 'a final surrender should crown Caesar');
+assert(results.republic === 'republic', 'a measured republican case should save the Republic');
+assert(results.caesar === 'caesar', 'a strong case for Caesar should produce his age');
+assert(results.fall === 'fall', 'winning every hard argument should crack the peace');
+assert(results.surrender === 'caesar', 'arguing his side well should crown him');
 
 const reset = reducer(play(paths.republic), { type: 'RESET' });
 assert(reset.stats.argument === 50 && reset.log.length === 0 && reset.debateIndex === 0, 'replay should clear the game');
@@ -177,23 +168,21 @@ function walk(index, state) {
   }
   const debate = DEBATES[index];
   debate.responses.forEach((response) => {
-    debate.decisions.forEach((decision) => {
-      let next = state;
-      next = reducer(next, { type: 'ADVANCE' });
-      next = reducer(next, { type: 'CHOOSE_SIDE', id: response.side || 'against' });
-      next = reducer(next, { type: 'CHOOSE_RESPONSE', id: response.id });
-      next = reducer(next, { type: 'ADVANCE' });
-      next = reducer(next, { type: 'ADVANCE' });
-      next = reducer(next, { type: 'CHOOSE_DECISION', id: decision.id });
-      next = reducer(next, { type: 'NEXT' });
-      walk(index + 1, next);
-    });
+    let next = state;
+    next = reducer(next, { type: 'ADVANCE' });
+    next = reducer(next, { type: 'CHOOSE_SIDE', id: response.side || 'against' });
+    next = reducer(next, { type: 'CHOOSE_RESPONSE', id: response.id });
+    next = reducer(next, { type: 'ADVANCE' });
+    next = reducer(next, { type: 'ADVANCE' });
+    next = reducer(next, { type: 'SENATE' });
+    next = reducer(next, { type: 'NEXT' });
+    walk(index + 1, next);
   });
 }
 walk(0, createGame());
 const total = counts.republic + counts.caesar + counts.fall;
 console.log(`endings across ${total} paths`, counts);
-const expected = DEBATES.reduce((total, debate) => total * debate.responses.length * debate.decisions.length, 1);
+const expected = DEBATES.reduce((total, debate) => total * debate.responses.length, 1);
 assert(total === expected, `brute force missed a path (${total} vs ${expected})`);
 ['republic', 'caesar', 'fall'].forEach((id) => {
   assert(counts[id] > total * 0.05, `${id} is too rare`);
