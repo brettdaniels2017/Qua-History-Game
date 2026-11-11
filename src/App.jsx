@@ -58,13 +58,7 @@ export default function App() {
     <div className="app">
       <Backdrop />
       <div className="foreground">
-        {screen === 'title' && (
-          <TitleScreen
-            onStart={start}
-            onContext={() => openInfo('context')}
-            onHow={() => openInfo('howto')}
-          />
-        )}
+        {screen === 'title' && <TitleScreen onStart={start} />}
         {screen === 'context' && (
           <InfoScreen
             page={HISTORY}

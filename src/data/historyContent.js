@@ -53,7 +53,7 @@ export const INTRO_BEATS = [
 
 export const HOW_TO = {
   kicker: 'Before you enter the Curia',
-  title: 'How to Play',
+  title: 'How the Game Works',
   lede: 'Pick a side, then argue it. The person across from you is whoever took the other one.',
   sections: [
     {

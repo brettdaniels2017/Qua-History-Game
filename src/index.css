@@ -111,6 +111,12 @@ h2 { font-size: 1.15rem; margin: 0 0 0.7rem; }
   place-items: center;
   padding: 2.5rem 1.2rem 3rem;
 }
+.title-screen {
+  align-content: start;
+  justify-items: center;
+  gap: 1rem;
+  padding-top: 1.6rem;
+}
 .title-slab, .intro-card, .info-scroll, .ending-card, .stage-card, .modal {
   width: min(1040px, 100%);
 }
@@ -155,6 +161,47 @@ h2 { font-size: 1.15rem; margin: 0 0 0.7rem; }
 .eagle { width: 74px; height: 54px; color: #8c6230; margin-bottom: 0.4rem; }
 .laurel { width: 220px; height: 28px; color: #8c6230; margin: 0.4rem auto 0.8rem; display: block; }
 .title-actions { justify-content: center; margin-top: 1.4rem; }
+.home-board { width: min(1040px, 100%); }
+.home-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.45rem;
+}
+.home-tabs button {
+  min-height: 48px;
+  border: 1px solid var(--line);
+  background: rgba(18, 8, 10, 0.72);
+  color: var(--gold-bright);
+  font-family: var(--serif);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.7rem 0.6rem;
+}
+.home-tabs button.is-on {
+  background: linear-gradient(180deg, #e7dcc8, #cbbba4);
+  color: var(--ink);
+  border-color: #8c7040;
+}
+.home-panel {
+  margin-top: 0.7rem;
+  background: rgba(18, 8, 10, 0.78);
+  border: 1px solid var(--line);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  padding: clamp(1.2rem, 3vw, 2.4rem);
+}
+.home-panel h1 { font-size: clamp(1.7rem, 3vw, 2.4rem); }
+.home-panel h2 { color: var(--gold-bright); margin-top: 1.6rem; }
+.agenda { list-style: none; padding: 0; margin: 1.3rem 0 0; }
+.agenda li {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 0.8rem;
+  padding: 0.65rem 0;
+  border-top: 1px solid rgba(226, 195, 122, 0.2);
+}
+.agenda span, .agenda strong { font-family: var(--serif); color: var(--gold); font-weight: 500; }
+.agenda p { margin: 0.15rem 0 0; color: var(--muted); }
 
 .info-scroll, .ending-card, .intro-card, .stage-card, .modal {
   background: rgba(18, 8, 10, 0.78);
@@ -412,7 +459,7 @@ h2 { font-size: 1.15rem; margin: 0 0 0.7rem; }
 .confirm { border-top: 1px solid var(--line); margin-top: 0.6rem; padding-top: 0.8rem; }
 
 @media (max-width: 860px) {
-  .dossier-grid, .topbar, .dock, .dialogue, .delta-list li, .chronicle li, .timeline li {
+  .dossier-grid, .topbar, .dock, .dialogue, .delta-list li, .chronicle li, .timeline li, .home-tabs {
     grid-template-columns: 1fr;
   }
   .topbar { width: calc(100% - 1.2rem); }
