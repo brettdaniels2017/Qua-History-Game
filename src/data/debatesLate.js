@@ -22,7 +22,7 @@ export const lateDebates = [
       { id: 'against', label: 'Argue for the Senate', text: 'Repair the chamber. Do not hand it to one man.' },
     ],
     situation: [
-      'The Senate is bought, stalled, and afraid of him.',
+      'January 49, before the river. Bribery is a trade, gangs break the assemblies, and the Senate cannot tell a constitution from a faction.',
     ],
     chamber: [
       {
@@ -45,7 +45,7 @@ export const lateDebates = [
     },
     senate() {
       return [
-        'The Senate is slow and often bought. That is not a reason to give him the state.',
+        'Bribery, delay, and gangs. The Senate is slow and often bought. That is not a reason to give him the state.',
       ];
     },
     responses: [
@@ -137,7 +137,7 @@ export const lateDebates = [
       { id: 'against', label: 'Condemn the crossing', text: 'No grievance justifies an army in Italy.' },
     ],
     situation: [
-      'He has crossed the Rubicon. He says there was no other choice.',
+      'He has crossed the Rubicon, the edge of his lawful command. The Senate’s final decree is days old, and he says they left him no other road.',
     ],
     chamber: [
       {
@@ -287,7 +287,7 @@ export const lateDebates = [
       { id: 'against', label: 'Oppose a life office', text: 'No peace that dies with one man is a constitution.' },
     ],
     situation: [
-      'He is dictator for life. He is not emperor. That comes later, with his heir.',
+      'It is 44 BCE. He has been dictator for life since February, after Pharsalus, a packed Senate, and a crown he refused while keeping the power. He is not emperor. That comes later, with his heir.',
     ],
     chamber: [
       {

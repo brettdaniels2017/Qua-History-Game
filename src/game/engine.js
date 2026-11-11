@@ -1,4 +1,6 @@
 import { DEBATES } from '../data/debates.js';
+import { DETAILS } from '../data/details.js';
+import { FOLLOWUPS } from '../data/followups.js';
 
 export { DEBATES };
 
@@ -52,7 +54,7 @@ const VERDICT = {
 
 const PRESSURE = {
   power: { popular: -1, stability: -1 },
-  legions: { popular: 0, stability: -3 },
+  legions: { popular: 0, stability: -4 },
   people: { popular: 2, stability: 1 },
   senate: { popular: 1, stability: 1 },
   rubicon: { popular: -2, stability: -4 },
@@ -89,6 +91,8 @@ export function resolveResponse(response, flags) {
     rating: call(response.rating, flags),
     explanation: call(response.explanation, flags),
     rebuttal: call(response.rebuttal, flags),
+    followups: FOLLOWUPS[response.id] || [],
+    details: DETAILS[response.id] || [],
   };
 }
 
@@ -268,16 +272,47 @@ export function reducer(state, action) {
       const rival = resolveRival(debate, chosen, state.flags);
       return {
         ...state,
-        phase: 'rating',
-        pending: { ...pending, rivalWho: rival.who, rivalName: rival.name, rivalMark: rival.mark },
+        phase: 'exchange',
+        pending: {
+          ...pending,
+          baseRating: pending.rating,
+          rivalWho: rival.who,
+          rivalName: rival.name,
+          rivalMark: rival.mark,
+        },
         flags: {
           ...state.flags,
           responses: { ...state.flags.responses, [debate.id]: response.id },
         },
       };
     }
+    case 'CHOOSE_FOLLOWUP': {
+      if (state.phase !== 'exchange' || !state.pending) return state;
+      const followup = state.pending.followups.find((item) => item.id === action.id);
+      if (!followup) return state;
+      const rating = clampStat(state.pending.baseRating + followup.nudge);
+      return {
+        ...state,
+        phase: 'detail',
+        pending: {
+          ...state.pending,
+          rating: Math.max(1, Math.min(10, rating)),
+          followup,
+        },
+      };
+    }
+    case 'CHOOSE_DETAIL': {
+      if (state.phase !== 'detail' || !state.pending) return state;
+      const detail = state.pending.details.find((item) => item.id === action.id);
+      if (!detail) return state;
+      return {
+        ...state,
+        phase: 'close',
+        pending: { ...state.pending, detail },
+      };
+    }
     case 'SENATE': {
-      if (state.phase !== 'rebuttal' || !state.pending) return state;
+      if (state.phase !== 'close' || !state.pending) return state;
       const debate = DEBATES[state.debateIndex];
       const verdict = judgeSenate(debate, state.pending.side, state.pending.rating);
       const before = state.stats;
@@ -293,6 +328,13 @@ export function reducer(state, action) {
         lead: state.pending.lead,
         explanation: state.pending.explanation,
         rebuttal: state.pending.rebuttal,
+        followId: state.pending.followup.id,
+        followLead: state.pending.followup.lead,
+        followText: state.pending.followup.text,
+        closing: state.pending.followup.answer,
+        detailLead: state.pending.detail.lead,
+        detailText: state.pending.detail.text,
+        detailAnswer: state.pending.detail.answer,
         aligned: verdict.aligned,
         senateLine: senateLine(state.pending.side, state.pending.rating),
         decisionId: verdict.decisionId,

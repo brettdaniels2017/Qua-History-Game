@@ -13,8 +13,9 @@ const PHASES = [
   ['situation', 'Point'],
   ['side', 'Side'],
   ['respond', 'Reply'],
-  ['rating', 'Rating'],
-  ['rebuttal', 'Answer'],
+  ['exchange', 'Answer'],
+  ['detail', 'Detail'],
+  ['close', 'Close'],
   ['results', 'Senate'],
 ];
 
@@ -51,9 +52,7 @@ export default function GameScreen({ state, dispatch, onGuide }) {
   let dock = null;
   if (!picked && state.phase === 'situation') {
     dock = { label: 'Choose a side', run: () => dispatch({ type: 'ADVANCE' }) };
-  } else if (!picked && state.phase === 'rating') {
-    dock = { label: 'Hear the rebuttal', run: () => dispatch({ type: 'ADVANCE' }) };
-  } else if (!picked && state.phase === 'rebuttal') {
+  } else if (!picked && state.phase === 'close') {
     dock = { label: 'The Senate decides', run: () => dispatch({ type: 'SENATE' }) };
   } else if (!picked && state.phase === 'results') {
     const last = state.debateIndex >= DEBATES.length - 1;
@@ -151,34 +150,44 @@ export default function GameScreen({ state, dispatch, onGuide }) {
             </>
           )}
 
-          {state.phase === 'rating' && state.pending && (
+          {state.phase === 'exchange' && state.pending && (
             <>
-              <RatingSeal rating={state.pending.rating} />
-              <div className="rating-copy">
-                <p className="rating-band">
-                  {ratingLabel(state.pending.rating)}
-                  {state.pending.side === 'for' ? ' case for Caesar' : ' case for the Republic'}
-                </p>
-                <p>{state.pending.explanation}</p>
-                {state.pending.side === 'for' ? (
-                  <p>The score is how well you made his case. It does not raise the Republic’s argument.</p>
-                ) : null}
+              <div className="thread">
+                <blockquote className="quote is-player">
+                  <footer>Lucius Valerius</footer>
+                  <p className="choice-lead">{state.pending.lead}</p>
+                  <p>{state.pending.text}</p>
+                </blockquote>
+                <blockquote className="quote">
+                  <footer>{state.pending.rivalName}</footer>
+                  <p>{state.pending.rebuttal}</p>
+                </blockquote>
               </div>
-              <blockquote className="quote">
-                <footer>Your argument</footer>
-                <p className="choice-lead">{state.pending.lead}</p>
-                <p>{state.pending.text}</p>
-              </blockquote>
+              <ChoiceList
+                heading="Answer that"
+                who="player"
+                items={state.pending.followups}
+                picked={picked}
+                onPick={(id) => choose(id, 'CHOOSE_FOLLOWUP')}
+              />
             </>
           )}
 
-          {state.phase === 'rebuttal' && state.pending && (
-            <Speech
-              who={state.pending.rivalWho}
-              label={state.pending.rivalMark}
-              kicker={`${state.pending.rivalName} answers you`}
-              lines={[state.pending.rebuttal]}
-            />
+          {state.phase === 'detail' && state.pending?.followup && (
+            <>
+              <Thread pending={state.pending} />
+              <ChoiceList
+                heading="Add to the case"
+                who="player"
+                items={state.pending.details}
+                picked={picked}
+                onPick={(id) => choose(id, 'CHOOSE_DETAIL')}
+              />
+            </>
+          )}
+
+          {state.phase === 'close' && state.pending?.detail && (
+            <Thread pending={state.pending} />
           )}
 
           {state.phase === 'results' && state.round && (
@@ -204,6 +213,32 @@ export default function GameScreen({ state, dispatch, onGuide }) {
           )}
         </div>
       </footer>
+    </div>
+  );
+}
+
+function Thread({ pending }) {
+  const lines = [
+    ['Lucius Valerius', pending.lead, pending.text, true],
+    [pending.rivalName, null, pending.rebuttal, false],
+    ['Lucius Valerius', pending.followup.lead, pending.followup.text, true],
+    [pending.rivalName, null, pending.followup.answer, false],
+  ];
+  if (pending.detail) {
+    lines.push(
+      ['Lucius Valerius', pending.detail.lead, pending.detail.text, true],
+      [pending.rivalName, null, pending.detail.answer, false],
+    );
+  }
+  return (
+    <div className="thread">
+      {lines.map(([name, lead, text, player]) => (
+        <blockquote className={`quote ${player ? 'is-player' : ''}`} key={`${name}-${lead || text}`}>
+          <footer>{name}</footer>
+          {lead ? <p className="choice-lead">{lead}</p> : null}
+          <p>{text}</p>
+        </blockquote>
+      ))}
     </div>
   );
 }
@@ -303,6 +338,9 @@ function Results({ debate, round }) {
       <h1>{round.senateLine}</h1>
       <RatingSeal rating={round.rating} />
       <p>{round.explanation}</p>
+      {round.followId === 'hedge' ? (
+        <p>The last reply gave ground. The Senate heard that too.</p>
+      ) : null}
       <p className="tradeoff">{tradeoffLine(round.before, round.after)}</p>
       <ul className="delta-list">
         {rows.map(([key, label]) => {

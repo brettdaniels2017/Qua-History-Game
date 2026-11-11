@@ -37,6 +37,8 @@ function checkContent() {
       assert(resolved.rating >= 1 && resolved.rating <= 10, `${debate.id}/${response.id} rating`);
       assert(resolved.explanation.length > 40, `${debate.id}/${response.id} explanation`);
       assert(resolved.rebuttal.length > 40, `${debate.id}/${response.id} rebuttal`);
+      assert(resolved.followups.length === 2, `${debate.id}/${response.id} needs a second exchange`);
+      assert(resolved.details.length === 2, `${debate.id}/${response.id} needs a detail exchange`);
       assert(ratingLabel(resolved.rating), 'label');
     });
     debate.decisions.forEach((decision) => {
@@ -56,8 +58,9 @@ function play(choices) {
     const response = debate.responses.find((item) => item.id === responseId);
     state = reducer(state, { type: 'CHOOSE_SIDE', id: response.side || 'against' });
     state = reducer(state, { type: 'CHOOSE_RESPONSE', id: responseId });
-    state = reducer(state, { type: 'ADVANCE' });
-    state = reducer(state, { type: 'ADVANCE' });
+    state = reducer(state, { type: 'CHOOSE_FOLLOWUP', id: 'press' });
+    const pending = state.pending;
+    state = reducer(state, { type: 'CHOOSE_DETAIL', id: pending.details[0].id });
     state = reducer(state, { type: 'SENATE' });
     ['argument', 'senate', 'popular', 'stability'].forEach((key) => {
       const value = state.stats[key];
@@ -160,6 +163,11 @@ assert(results.surrender === 'caesar', 'arguing his side well should crown him')
 const reset = reducer(play(paths.republic), { type: 'RESET' });
 assert(reset.stats.argument === 50 && reset.log.length === 0 && reset.debateIndex === 0, 'replay should clear the game');
 
+function responseFollowups(response) {
+  const resolved = resolveResponse(response, { responses: {}, decisions: {} });
+  return resolved.followups.map((item) => item.id);
+}
+
 const counts = { republic: 0, caesar: 0, fall: 0 };
 function walk(index, state) {
   if (index === DEBATES.length) {
@@ -168,21 +176,25 @@ function walk(index, state) {
   }
   const debate = DEBATES[index];
   debate.responses.forEach((response) => {
-    let next = state;
-    next = reducer(next, { type: 'ADVANCE' });
-    next = reducer(next, { type: 'CHOOSE_SIDE', id: response.side || 'against' });
-    next = reducer(next, { type: 'CHOOSE_RESPONSE', id: response.id });
-    next = reducer(next, { type: 'ADVANCE' });
-    next = reducer(next, { type: 'ADVANCE' });
-    next = reducer(next, { type: 'SENATE' });
-    next = reducer(next, { type: 'NEXT' });
-    walk(index + 1, next);
+    responseFollowups(response).forEach((followupId) => {
+      let next = state;
+      next = reducer(next, { type: 'ADVANCE' });
+      next = reducer(next, { type: 'CHOOSE_SIDE', id: response.side || 'against' });
+      next = reducer(next, { type: 'CHOOSE_RESPONSE', id: response.id });
+      next = reducer(next, { type: 'CHOOSE_FOLLOWUP', id: followupId });
+      next = reducer(next, { type: 'CHOOSE_DETAIL', id: next.pending.details[0].id });
+      next = reducer(next, { type: 'SENATE' });
+      next = reducer(next, { type: 'NEXT' });
+      walk(index + 1, next);
+    });
   });
 }
 walk(0, createGame());
 const total = counts.republic + counts.caesar + counts.fall;
 console.log(`endings across ${total} paths`, counts);
-const expected = DEBATES.reduce((total, debate) => total * debate.responses.length, 1);
+const expected = DEBATES.reduce((total, debate) => (
+  total * debate.responses.reduce((count, response) => count + responseFollowups(response).length, 0)
+), 1);
 assert(total === expected, `brute force missed a path (${total} vs ${expected})`);
 ['republic', 'caesar', 'fall'].forEach((id) => {
   assert(counts[id] > total * 0.05, `${id} is too rare`);

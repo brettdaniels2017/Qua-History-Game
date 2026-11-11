@@ -11,7 +11,7 @@ export const earlyDebates = [
       { id: 'against', label: 'Argue against his power', text: 'A command ends, or it stops being a republic.' },
     ],
     situation: [
-      'Caesar’s command in Gaul is ending. He wants to keep it.',
+      'It is 50 BCE. Caesar’s command in Gaul is ending. He wants to stand for consul without sending the army home, where a court can reach him.',
     ],
     chamber: [
       {
@@ -22,12 +22,12 @@ export const earlyDebates = [
     ],
     caesar() {
       return [
-        'Why should the man who has secured Rome’s future be denied the authority to continue doing so?',
+        'Gaul is quiet and the treasury is full. Why should the man who has secured Rome’s future be denied the authority to continue doing so?',
       ];
     },
     senate() {
       return [
-        'Success is not a second term. End the command.',
+        'Sulla was cheered too. Success is not a second term. End the command.',
       ];
     },
     responses: [
@@ -114,7 +114,7 @@ export const earlyDebates = [
       { id: 'against', label: 'Argue the army is Rome’s', text: 'A legion answers the Republic, not its general.' },
     ],
     situation: [
-      'His veterans trust him. The Republic says the army belongs to Rome.',
+      'His veterans take their pay and their land from him, not from the Senate. The Republic still says the army belongs to Rome.',
     ],
     chamber: [
       {
@@ -228,7 +228,7 @@ export const earlyDebates = [
       { id: 'against', label: 'Argue relief must be law', text: 'Help that depends on one man is not a public good.' },
     ],
     situation: [
-      'He says he will feed ordinary Romans if the Senate will not.',
+      'Grain, debt, and land for veterans are already politics. He says he will do for ordinary Romans what the Senate will not.',
     ],
     chamber: [
       {

@@ -272,6 +272,9 @@ h2 { font-size: 1.15rem; margin: 0 0 0.7rem; }
 .dialogue.is-compact { margin-bottom: 1.2rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(226, 195, 122, 0.2); }
 .dialogue.is-compact .cameo { width: 72px; }
 .dialogue-caesar p, .dialogue-senator p, .speech-caesar p { font-size: 1.28rem; }
+.thread { display: grid; gap: 0.65rem; }
+.thread .quote { margin: 0; }
+.quote.is-player { box-shadow: inset 3px 0 0 #e2c37a; }
 .speaker, .quote, .speech {
   margin: 1rem 0;
   padding: 0.9rem 1rem;

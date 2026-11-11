@@ -59,14 +59,14 @@ export const HOW_TO = {
     {
       heading: 'Six debates',
       paragraphs: [
-        'Each topic opens with a short point. You take a side, answer in a sentence or two, and the other side answers back. The Senate then moves. A strong case pulls them your way. A weak one pushes them off it.',
+        'Each topic is a conversation. You take a side, they answer, you answer back, and then each of you adds one harder detail. Only then does the Senate move.',
         'He remembers which way they moved. A loss on the legions can come back at the river.',
       ],
     },
     {
       heading: 'How an argument is rated',
       paragraphs: [
-        'The score is how well you made the case you chose. From 8 up, the Senate moves with you. At 6 or 7, they split. Below that, they move against you.',
+        'The score is the whole exchange, not the first sentence. A sharp first point can be spent if the reply gives ground. From 8 up, the Senate moves with you. At 6 or 7, they split. Below that, they move against you.',
         'Senate Support counts senators still holding the Republic. A strong case against Caesar raises it. A strong case for him spends it: they followed you, toward Caesar.',
       ],
     },
