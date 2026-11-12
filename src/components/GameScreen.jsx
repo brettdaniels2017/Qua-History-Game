@@ -324,14 +324,20 @@ function RatingSeal({ rating }) {
   );
 }
 
-function Results({ debate, round }) {
-  const rows = [
-    ['argument', 'Republican argument'],
-    ['senate', 'Senate support'],
-    ['popular', 'Public support'],
-    ['stability', 'Political stability'],
-  ];
+const MEASURES = [
+  ['argument', 'Republican argument'],
+  ['senate', 'Senate support'],
+  ['popular', 'Public support'],
+  ['stability', 'Political stability'],
+];
 
+const STAMPS = {
+  with: 'With you',
+  split: 'Split',
+  against: 'Against',
+};
+
+function Results({ debate, round }) {
   return (
     <div className="results">
       <p className="year-chip">{debate.year} · The Senate</p>
@@ -341,21 +347,7 @@ function Results({ debate, round }) {
       {round.followId === 'hedge' ? (
         <p>The last reply gave ground. The Senate heard that too.</p>
       ) : null}
-      <p className="tradeoff">{tradeoffLine(round.before, round.after)}</p>
-      <ul className="delta-list">
-        {rows.map(([key, label]) => {
-          const delta = round.after[key] - round.before[key];
-          const tone = delta > 0 ? 'up' : delta < 0 ? 'down' : 'flat';
-          const sign = delta > 0 ? `+${delta}` : `${delta}`;
-          return (
-            <li key={key} className={tone}>
-              <span>{label}</span>
-              <strong>{round.before[key]} → {round.after[key]}</strong>
-              <em>{delta === 0 ? 'held' : sign}</em>
-            </li>
-          );
-        })}
-      </ul>
+      <Decree round={round} />
       <h2>What followed in Rome</h2>
       <p>{round.consequence}</p>
       <blockquote className="quote">
@@ -363,5 +355,57 @@ function Results({ debate, round }) {
         <p>{round.rebuttal}</p>
       </blockquote>
     </div>
+  );
+}
+
+function Decree({ round }) {
+  return (
+    <section className={`decree decree-${round.aligned}`} aria-label="Senatorial decree">
+      <p className="kicker">Senatus consultum</p>
+      <div className={`wax-stamp stamp-${round.aligned}`}>
+        <span>{STAMPS[round.aligned]}</span>
+      </div>
+      <h2>{round.decisionLabel}</h2>
+      <ul className="decree-measures">
+        {MEASURES.map(([key, label]) => (
+          <Measure
+            key={key}
+            statKey={key}
+            label={label}
+            before={round.before[key]}
+            after={round.after[key]}
+          />
+        ))}
+      </ul>
+      <p className="tradeoff">{tradeoffLine(round.before, round.after)}</p>
+    </section>
+  );
+}
+
+function Measure({ statKey, label, before, after }) {
+  const [width, setWidth] = useState(before);
+  const delta = after - before;
+  const tone = delta > 0 ? 'up' : delta < 0 ? 'down' : 'flat';
+  const sign = delta > 0 ? `+${delta}` : `${delta}`;
+
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) {
+      setWidth(after);
+      return undefined;
+    }
+    const id = window.setTimeout(() => setWidth(after), 40);
+    return () => window.clearTimeout(id);
+  }, [after]);
+
+  return (
+    <li className={tone}>
+      <span>{label}</span>
+      <strong>{before} → {after}</strong>
+      <em>{delta === 0 ? 'held' : sign}</em>
+      <i className="decree-track" aria-hidden="true">
+        <b className={`decree-fill fill-${statKey}`} style={{ width: `${width}%` }} />
+      </i>
+    </li>
   );
 }

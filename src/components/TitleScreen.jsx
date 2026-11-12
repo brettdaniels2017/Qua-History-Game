@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { DEBATES } from '../data/debates.js';
 import { HISTORY, HOW_TO } from '../data/historyContent.js';
-import { Eagle, Laurel } from './Emblems.jsx';
+import { Cameo, Eagle, Laurel } from './Emblems.jsx';
 import { ArticleBody } from './InfoScreen.jsx';
 
 const TABS = [
@@ -24,6 +24,16 @@ export default function TitleScreen({ onStart }) {
         </h1>
         <Laurel />
         <p className="tagline">One Republic. One Man. The Fate of Rome.</p>
+        <div className="home-coins">
+          <div className="home-coin">
+            <Cameo who="player" />
+            <p>Lucius Valerius</p>
+          </div>
+          <div className="home-coin">
+            <Cameo who="caesar" />
+            <p>Julius Caesar</p>
+          </div>
+        </div>
       </header>
 
       <div className="home-board">
